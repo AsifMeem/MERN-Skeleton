@@ -4,7 +4,7 @@ const ProfileSchema = new mongoose.Schema({
     //adding a reference to the user model to cross-check with profile
     user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'user'
+        ref: 'user' //tells mongoose which model to refer to
     },
     // creating user model
     company: {
