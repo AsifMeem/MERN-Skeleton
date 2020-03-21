@@ -45,4 +45,45 @@ async (req, res) => {
 
 });
 
+//@route    GET api/post
+//@desc     Get all posts
+//@access   Private
+
+router.get('/', auth , async (req, res) => {
+    try {
+        //gets posts in ascending order , latest first => -1
+        const posts = await Post.find().sort({ date: -1 });
+        res.json(posts);
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+//@route    GET api/post/:id
+//@desc     Get a post by ID
+//@access   Private
+
+router.get('/:id', auth , async (req, res) => {
+    try {
+        //gets posts in ascending order , latest first => -1
+        const post = await Post.findById(req.params.id);
+        //For outputting proper error message if the post is not found for a valid object id
+        if(!post){
+            return res.status(404).json({ msg: 'Profile not found' });
+        } 
+
+        res.json(post);
+
+    } catch (err) {
+        //For outputting proper error message if the post is not found for an invalid object id
+        if(err.kind == 'ObjectId'){
+            return res.status(404).json({ msg: 'Profile not found' });
+        } 
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 module.exports = router;

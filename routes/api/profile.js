@@ -115,6 +115,7 @@ router.post(
 router.get('/', async (req, res) => {
 
     try {
+        //find all and populate with user name and avatar
         const profiles = await Profile.find().populate('user', ['name', 'avatar']);
         res.json(profiles);
 
@@ -136,15 +137,16 @@ router.get('/user/:user_id', async (req, res) => {
         const profile = await Profile.findOne({
             user: req.params.user_id
         }).populate('user', ['name', 'avatar']); //populate Profile model with User model info
-
+        //For outputting proper error message if the profile is not found for a valid object id
         if (!profile)
             return res.status(400).json({ msg: 'Profile not found' });
 
         res.json(profile);
 
     } catch (err) {
+        //For outputting proper error message if the profile is not found for an invalid object id
         if(err.kind == 'ObjectId'){
-            return res.status(400).json({ msg: 'Profile not found' });
+            return res.status(404).json({ msg: 'Profile not found' });
         } 
         console.log(err.message);
         res.status(500).send('Server Error');
