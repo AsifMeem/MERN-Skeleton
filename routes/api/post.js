@@ -79,11 +79,47 @@ router.get('/:id', auth , async (req, res) => {
     } catch (err) {
         //For outputting proper error message if the post is not found for an invalid object id
         if(err.kind == 'ObjectId'){
-            return res.status(404).json({ msg: 'Profile not found' });
+            return res.status(404).json({ msg: 'Post not found' });
         } 
         console.error(err.message);
         res.status(500).send('Server Error');
     }
 });
+
+//@route    DELETE api/post/:id
+//@desc     Delete a post
+//@access   Private
+
+router.delete('/:id', auth , async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.id);
+
+
+        //Check user
+        if (post.user.toString() != req.user.id){
+            return res.status(401).json({ msg: 'User not authorized' });
+        }
+
+        
+        //For outputting proper error message if the post is not found for a valid object id
+        if(!post){
+            return res.status(404).json({ msg: 'Post not found' });
+        } 
+
+        await post.remove();
+        res.json({ msg: 'Post removed' });
+
+    } catch (err) {
+        //For outputting proper error message if the post is not found for an invalid object id
+        if(err.kind == 'ObjectId'){
+            return res.status(404).json({ msg: 'Post not found' });
+        } 
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+
+
 
 module.exports = router;
